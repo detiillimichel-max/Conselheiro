@@ -2,59 +2,47 @@
 
 **Um conselho quando você precisa.**
 
-O Conselheiro é um assistente conversacional em português que combina conselhos, reflexões e conteúdo de referência. A interface foi pensada para celular, com respostas em formato de conversa e o estado de resposta com três pontinhos preservado.
+O Conselheiro é um assistente de sabedoria em português que combina fontes públicas para entregar conselho prático, reflexão e Palavra. A arquitetura está evoluindo para uma **mini IA modular**, em que cada capacidade pode ter seu próprio arquivo JavaScript.
 
-## 🧠 Mini IA modular
+## 🔌 APIs públicas usadas
 
-O projeto está evoluindo para uma arquitetura em que cada capacidade fica isolada em seu próprio arquivo JavaScript. O objetivo é permitir que o modo **Inteligente** escolha a fonte adequada conforme a pergunta, sem transformar o `script.js` principal em um arquivo monolítico.
+### Núcleo atual
 
-### Capacidades planejadas/implementadas
-
-| Capacidade | Módulo | API/Fonte |
+| API | Uso | Endpoint / documentação |
 |---|---|---|
-| ✦ Conselheiro | `script.js` | Advice Slip + fallbacks |
-| 📚 Conhecimento | `api/knowledge.js` | Wikipedia / MediaWiki API |
-| 📖 Livros | `api/books.js` | Open Library |
-| 🌤️ Meu dia | `api/weather.js` | Open-Meteo |
-| 🌎 Mundo | `api/world.js` | REST Countries |
-| 🎨 Cultura | `api/culture.js` | Wikimedia Commons |
-| 🚀 Ciência | `api/science.js` | NASA APOD |
-| 📰 Notícias/tecnologia | `api/news.js` | Hacker News API |
-| 🧠 Seleção de capacidade | `api/router.js` | Roteador local |
+| **Advice Slip** | Conselhos práticos | `https://api.adviceslip.com/advice/search/{query}` — [documentação](https://api.adviceslip.com/) |
+| **DummyJSON Quotes** | Fonte de reflexão/fallback atual | `https://dummyjson.com/quotes/random` — [documentação](https://dummyjson.com/docs/quotes) |
+| **Quotable** | Fallback de frases | `https://api.quotable.io/random` — [API](https://api.quotable.io/) |
+| **ABíbliaDigital** | Versículos/Bíblia | `https://www.abibliadigital.com.br/api/verses/nvi/random` — [documentação](https://abibliadigital.api.br/) |
+| **MyMemory** | Tradução EN → PT | `https://api.mymemory.translated.net/get` — [API](https://mymemory.translated.net/doc/spec.php) |
 
-As APIs modulares são uma camada adicional. O fluxo original do Conselheiro continua funcionando de forma independente.
+O Advice Slip disponibiliza busca por termo via `GET /advice/search/{query}`. citeturn0search0 O DummyJSON disponibiliza o recurso público de quotes. citeturn0search1turn0search2 A ABíbliaDigital oferece API REST com múltiplas versões e endpoints de versículos. citeturn0search3turn0search11
 
-## 🔌 APIs usadas atualmente
+### 🧠 Módulos de expansão
 
-### Núcleo do Conselheiro
+Cada capacidade fica isolada em seu próprio JS para facilitar manutenção e futuras integrações:
 
-- **Advice Slip** — busca conselhos por tema.
-- **DummyJSON Quotes** — fonte atual usada como substituta de Quotable quando necessário.
-- **Quotable** — fallback de citações.
-- **A Bíblia Digital** — busca versículos NVI, com fallback local.
-- **Bible API** — fallback adicional.
-- **MyMemory** — tradução EN → PT-BR.
+| Arquivo | Capacidade | API pública | URL base |
+|---|---|---|---|
+| `api/knowledge.js` | 🔎 Conhecimento | Wikipedia | `https://www.wikipedia.org/` |
+| `api/books.js` | 📚 Livros | Open Library | `https://openlibrary.org/developers/api` |
+| `api/weather.js` | 🌤️ Clima | Open-Meteo | `https://open-meteo.com/en/docs` |
+| `api/world.js` | 🌎 Países | REST Countries | `https://restcountries.com/` |
+| `api/culture.js` | 🎨 Cultura | Wikimedia Commons | `https://commons.wikimedia.org/wiki/Commons:API` |
+| `api/science.js` | 🚀 Ciência | NASA APIs / APOD | `https://api.nasa.gov/` |
+| `api/news.js` | 📰 Tecnologia/notícias | Hacker News API | `https://github.com/HackerNews/API` |
+| `api/router.js` | 🧠 Roteamento | Motor interno | — |
 
-### Novas APIs modulares
+> **Nota:** “API pública” não significa necessariamente “sem limite” ou “sem necessidade de chave”. Cada módulo deve respeitar sua documentação, limites, CORS e requisitos de autenticação antes de ser ativado no frontend.
 
-- **Wikipedia / MediaWiki API** — conhecimento geral.
-- **Open Library** — descoberta de livros, autores e assuntos. A documentação recomenda identificar a aplicação e usar cache quando possível. urlOpen Library APIhttps://openlibrary.org/developers/api
-- **Open-Meteo** — dados meteorológicos.
-- **REST Countries** — informações estruturadas sobre países.
-- **Wikimedia Commons** — conteúdo cultural e multimídia.
-- **NASA APOD** — astronomia e ciência.
-- **Hacker News API** — notícias e tecnologia.
-
-> **Nota:** disponibilidade, limites, autenticação e políticas de uso podem mudar. Antes de transformar uma API em dependência crítica, o módulo deve tratar falhas e possuir fallback quando possível.
-
-## 📁 Estrutura
+## 🧩 Arquitetura modular
 
 ```text
 Conselheiro/
 ├── index.html
 ├── style.css
 ├── script.js
-├── README.md
+│
 └── api/
     ├── knowledge.js
     ├── books.js
@@ -66,75 +54,82 @@ Conselheiro/
     └── router.js
 ```
 
-## 💬 Como usar
+O `script.js` continua sendo o núcleo do Conselheiro atual. Os módulos `api/*.js` são uma camada adicional para transformar o aplicativo gradualmente em uma mini IA capaz de escolher fontes conforme a pergunta.
 
-1. Abra o Conselheiro.
-2. Escreva a pergunta em português.
-3. O núcleo identifica o tema e busca as fontes disponíveis.
-4. A resposta aparece como uma conversa.
-5. Os três pontinhos mostram que o Conselheiro está trabalhando enquanto consulta/traduz as fontes.
+## 🧠 Visão da mini IA
+
+```text
+Pergunta do usuário
+        ↓
+     router.js
+        ↓
+┌───────┼────────┬────────┐
+↓       ↓        ↓        ↓
+Livros  Clima    Países   Conhecimento
+books   weather  world    knowledge
+        ↓
+   fonte especializada
+        ↓
+     resposta
+```
 
 Exemplos:
 
-- `um conselho sobre amor`
-- `estou ansioso no trabalho`
-- `preciso de fé hoje`
-- `qual é a capital do Japão?`
-- `me indique um livro sobre coragem`
-- `como está o clima?`
+- “Me indique um livro sobre coragem” → `books.js`
+- “Como está o tempo?” → `weather.js`
+- “Quero conhecer o Japão” → `world.js`
+- “Quem foi Leonardo da Vinci?” → `knowledge.js`
+- “Quero saber sobre o espaço” → `science.js`
 
 ## 🔐 Segurança
 
-Nenhuma API key deve ser colocada diretamente no HTML ou no JavaScript público. Quando uma integração exigir segredo, a credencial deverá ficar em uma camada de backend/automação segura. APIs públicas sem segredo podem ser consumidas pelos módulos quando seus limites e políticas permitirem.
+Nenhuma chave privada deve ser colocada no `index.html`, `style.css` ou em módulos públicos do frontend.
 
-## ⚡ Cache futuro
+Se uma API exigir segredo, a credencial deverá ficar em um ambiente seguro, como **GitHub Secrets**, e ser usada por um processo server-side/automação apropriado. O GitHub Pages continua sendo a camada pública do frontend.
 
-O próximo passo de infraestrutura é avaliar cache para reduzir chamadas repetidas às APIs. Open Library, por exemplo, recomenda cache quando possível. urlOpen Library — documentação de usohttps://openlibrary.org/developers/api
+## ⚡ Cache — próxima evolução
 
-Uma futura arquitetura poderá usar:
+A arquitetura poderá ganhar uma camada de cache para reduzir chamadas repetidas às APIs:
 
 ```text
-Pergunta
-   ↓
-Router 🧠
-   ↓
-Módulo JS
-   ↓
+Usuário
+  ↓
+Conselheiro
+  ↓
 Cache
-   ├── HIT  → resposta rápida
-   └── MISS → API pública → salva cache
+  ├── HIT  → resposta rápida
+  └── MISS → API pública → salva cache → resposta
 ```
 
-Turso é uma possibilidade futura para o cache persistente; não faz parte da dependência atual do Conselheiro.
+Turso é uma possibilidade futura para o cache persistente. O cache não substitui os módulos de API; ele fica entre o roteador e as fontes externas.
 
-## 🎨 Interface
+## ✨ Experiência atual
 
-- Tema escuro `#0B0F1A`
-- Glow radial
-- Cards/painéis com bordas suaves
-- Fonte Fraunces para conteúdo de sabedoria
-- Animações `fadeUp`
-- Estado de resposta com **typing dots**
-- Composer fixo para celular
+- Interface mobile-first em estilo Copilot
+- Conversa em formato de mensagens
+- Composer fixo na parte inferior
 - Ícones Lucide
-- Menu para Neural IA, Vibe Mensagens e Hub de Jogos
+- Animação de **três pontinhos** durante a busca/tradução
+- Conselho prático
+- Reflexão
+- Palavra
+- Tradução para português
+- Fallbacks locais quando uma fonte externa falha
+
+**Regra de evolução:** adicionar capacidade sem quebrar o que já funciona.
+
+## 🔗 Ecossistema
+
+- [Neural IA](https://detiillimichel-max.github.io/-Neural-iA/)
+- [Vibe Mensagens](https://vibe-mensagens.vercel.app/)
+- [Hub de Jogos](https://detiillimichel-max.github.io/hubs-de-jogos/)
 
 ## 🚀 GitHub Pages
 
-O projeto é compatível com GitHub Pages. A publicação usa a branch `main` e a raiz do repositório.
+O projeto roda como site estático no GitHub Pages.
 
-**Use agora:**
+**Uso:** `https://detiillimichel-max.github.io/Conselheiro/`
 
-`detiillimichel-max.github.io/Conselheiro/`
+## ❤️ Projeto
 
-## 🔗 Projetos conectados
-
-- Neural IA — `https://detiillimichel-max.github.io/-Neural-iA/`
-- Vibe Mensagens — `https://vibe-mensagens.vercel.app/`
-- Hub de Jogos — `https://detiillimichel-max.github.io/hubs-de-jogos/`
-
-## 🎯 Princípio de evolução
-
-**Adicionar capacidade sem quebrar o que já funciona.**
-
-Novas APIs devem ser modulares, ter tratamento de erro e não alterar o comportamento do núcleo, do composer, do layout ou dos três pontinhos de resposta.
+Feito para ser simples, útil e acolhedor — e para crescer gradualmente de um conselheiro de três fontes para uma pequena IA modular de ferramentas públicas.
