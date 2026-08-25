@@ -2,73 +2,139 @@
 
 **Um conselho quando você precisa.**
 
-O Conselheiro é um amigo sábio que te escuta em português e te devolve 3 tipos de sabedoria na hora. Sem cadastro, sem propaganda, de graça.
+O Conselheiro é um assistente conversacional em português que combina conselhos, reflexões e conteúdo de referência. A interface foi pensada para celular, com respostas em formato de conversa e o estado de resposta com três pontinhos preservado.
 
-### Para quem é?
+## 🧠 Mini IA modular
 
-- Para quando você está ansioso e precisa respirar
-- Para quando precisa de coragem antes de uma decisão
-- Para quando quer começar o dia com uma palavra boa
-- Para quando o coração está apertado por amor, trabalho, família ou fé
+O projeto está evoluindo para uma arquitetura em que cada capacidade fica isolada em seu próprio arquivo JavaScript. O objetivo é permitir que o modo **Inteligente** escolha a fonte adequada conforme a pergunta, sem transformar o `script.js` principal em um arquivo monolítico.
 
-### Como usar? É muito simples
+### Capacidades planejadas/implementadas
 
-1. Abra o app: **detiillimichel-max.github.io/Conselheiro**
-2. Na caixinha embaixo, escreva do seu jeito, como se falasse com um amigo:
-   - `um conselho sobre amor`
-   - `estou ansioso no trabalho`
-   - `preciso de fé hoje`
-   - `conselho sobre dinheiro`
+| Capacidade | Módulo | API/Fonte |
+|---|---|---|
+| ✦ Conselheiro | `script.js` | Advice Slip + fallbacks |
+| 📚 Conhecimento | `api/knowledge.js` | Wikipedia / MediaWiki API |
+| 📖 Livros | `api/books.js` | Open Library |
+| 🌤️ Meu dia | `api/weather.js` | Open-Meteo |
+| 🌎 Mundo | `api/world.js` | REST Countries |
+| 🎨 Cultura | `api/culture.js` | Wikimedia Commons |
+| 🚀 Ciência | `api/science.js` | NASA APOD |
+| 📰 Notícias/tecnologia | `api/news.js` | Hacker News API |
+| 🧠 Seleção de capacidade | `api/router.js` | Roteador local |
 
-3. Pronto. Em 2 segundos você recebe 3 respostas:
+As APIs modulares são uma camada adicional. O fluxo original do Conselheiro continua funcionando de forma independente.
 
-> **✦ Conselho prático** — uma dica direta pra fazer agora
-> **✧ Para refletir** — uma frase de pensadores do mundo todo
-> **✟ Uma Palavra** — um versículo da Bíblia NVI que combina com o que você sente
+## 🔌 APIs usadas atualmente
 
-### O que torna ele diferente?
+### Núcleo do Conselheiro
 
-Ele não sorteia frases aleatórias. Ele **entende** o que você escreveu (amor, ansiedade, coragem, trabalho, fé) e busca de verdade nas maiores bibliotecas de sabedoria do mundo, e te entrega tudo traduzido em português.
+- **Advice Slip** — busca conselhos por tema.
+- **DummyJSON Quotes** — fonte atual usada como substituta de Quotable quando necessário.
+- **Quotable** — fallback de citações.
+- **A Bíblia Digital** — busca versículos NVI, com fallback local.
+- **Bible API** — fallback adicional.
+- **MyMemory** — tradução EN → PT-BR.
 
-Você pode copiar, salvar e voltar depois. Ele funciona no celular como um app — é só clicar em "Instalar" ou "Adicionar à tela inicial".
+### Novas APIs modulares
 
-### É de graça? Precisa de cadastro?
+- **Wikipedia / MediaWiki API** — conhecimento geral.
+- **Open Library** — descoberta de livros, autores e assuntos. A documentação recomenda identificar a aplicação e usar cache quando possível. urlOpen Library APIhttps://openlibrary.org/developers/api
+- **Open-Meteo** — dados meteorológicos.
+- **REST Countries** — informações estruturadas sobre países.
+- **Wikimedia Commons** — conteúdo cultural e multimídia.
+- **NASA APOD** — astronomia e ciência.
+- **Hacker News API** — notícias e tecnologia.
 
-100% grátis. Não precisa criar conta. Não guardamos o que você escreve. Não vendemos nada. É feito para acolher.
+> **Nota:** disponibilidade, limites, autenticação e políticas de uso podem mudar. Antes de transformar uma API em dependência crítica, o módulo deve tratar falhas e possuir fallback quando possível.
 
-Feito com carinho por Michel, para momentos em que a gente só precisa ouvir algo bom.
+## 📁 Estrutura
 
-**Use agora:** detiillimichel-max.github.io/Conselheiro
-.
-
-📁 Estrutura final
-conselheiro-final/
+```text
+Conselheiro/
 ├── index.html
-├── css/style.css   <- CSS melhorado Copilot style
-├── js/app.js       <- 3 APIs + tradução
-├── manifest.json
-├── sw.js
-└── README.md
-🔌 3 APIs Públicas
-Advice Slip - GET https://api.adviceslip.com/advice/search/{en}
-Quotable - GET https://api.quotable.io/search/quotes?query={en}
-Bíblia Digital - POST https://www.abibliadigital.com.br/api/verses/search
-Body: {version:"nvi", search:"amor"}
-Fallback: GET https://www.abibliadigital.com.br/api/verses/nvi/random
-Sem API key, 20 req/hora no free.
-🎨 CSS Melhorado
-Fundo #0B0F1A com radial-gradient glow
-Cards com gradiente e borda #2A3852
-Fonte Fraunces 20px para frases
-Animações fadeUp + typing dots
-Input pill 56px como no print
-Bottom nav pill igual Copilot
-🚀 GitHub Pages
-Mantenha pastas css/ e js/. Ative Pages em Settings > Pages > main / root.
+├── style.css
+├── script.js
+├── README.md
+└── api/
+    ├── knowledge.js
+    ├── books.js
+    ├── weather.js
+    ├── world.js
+    ├── culture.js
+    ├── science.js
+    ├── news.js
+    └── router.js
+```
 
-Como funciona o motor invisível
-Usuário digita em PT: "estou ansioso"
-→ detecta: ansiedade → anxiety
-→ busca: advice/search/anxiety + quotable/search/anxiety + biblia/search ansiedade
-→ traduz EN→PT com MyMemory
-→ exibe 3 cards: Conselho, Reflexão, Palavra
+## 💬 Como usar
+
+1. Abra o Conselheiro.
+2. Escreva a pergunta em português.
+3. O núcleo identifica o tema e busca as fontes disponíveis.
+4. A resposta aparece como uma conversa.
+5. Os três pontinhos mostram que o Conselheiro está trabalhando enquanto consulta/traduz as fontes.
+
+Exemplos:
+
+- `um conselho sobre amor`
+- `estou ansioso no trabalho`
+- `preciso de fé hoje`
+- `qual é a capital do Japão?`
+- `me indique um livro sobre coragem`
+- `como está o clima?`
+
+## 🔐 Segurança
+
+Nenhuma API key deve ser colocada diretamente no HTML ou no JavaScript público. Quando uma integração exigir segredo, a credencial deverá ficar em uma camada de backend/automação segura. APIs públicas sem segredo podem ser consumidas pelos módulos quando seus limites e políticas permitirem.
+
+## ⚡ Cache futuro
+
+O próximo passo de infraestrutura é avaliar cache para reduzir chamadas repetidas às APIs. Open Library, por exemplo, recomenda cache quando possível. urlOpen Library — documentação de usohttps://openlibrary.org/developers/api
+
+Uma futura arquitetura poderá usar:
+
+```text
+Pergunta
+   ↓
+Router 🧠
+   ↓
+Módulo JS
+   ↓
+Cache
+   ├── HIT  → resposta rápida
+   └── MISS → API pública → salva cache
+```
+
+Turso é uma possibilidade futura para o cache persistente; não faz parte da dependência atual do Conselheiro.
+
+## 🎨 Interface
+
+- Tema escuro `#0B0F1A`
+- Glow radial
+- Cards/painéis com bordas suaves
+- Fonte Fraunces para conteúdo de sabedoria
+- Animações `fadeUp`
+- Estado de resposta com **typing dots**
+- Composer fixo para celular
+- Ícones Lucide
+- Menu para Neural IA, Vibe Mensagens e Hub de Jogos
+
+## 🚀 GitHub Pages
+
+O projeto é compatível com GitHub Pages. A publicação usa a branch `main` e a raiz do repositório.
+
+**Use agora:**
+
+`detiillimichel-max.github.io/Conselheiro/`
+
+## 🔗 Projetos conectados
+
+- Neural IA — `https://detiillimichel-max.github.io/-Neural-iA/`
+- Vibe Mensagens — `https://vibe-mensagens.vercel.app/`
+- Hub de Jogos — `https://detiillimichel-max.github.io/hubs-de-jogos/`
+
+## 🎯 Princípio de evolução
+
+**Adicionar capacidade sem quebrar o que já funciona.**
+
+Novas APIs devem ser modulares, ter tratamento de erro e não alterar o comportamento do núcleo, do composer, do layout ou dos três pontinhos de resposta.
