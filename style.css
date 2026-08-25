@@ -1,14 +1,13 @@
 /* Conselheiro — Visual Copilot / mobile-first */
 *{margin:0;padding:0;box-sizing:border-box}
-
 :root{--bg:#0B0F1A;--pill:#1B2436;--pill2:#222E45;--border:#2A3852;--text:#D6DDEB;--muted:#8B95A9;--accent:#F5D547;--purple:#A78BFA;--green:#5EE9B5}
 html{height:100%;background:var(--bg)}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100dvh;min-height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;position:relative}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100dvh;min-height:100vh;overflow:hidden;position:relative}
 .bg-glow{position:fixed;top:48%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(ellipse at center,rgba(70,90,150,.18) 0%,rgba(35,50,90,.08) 35%,transparent 70%);pointer-events:none;filter:blur(24px);z-index:0}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 20px 0;position:relative;z-index:5}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 20px 0;position:relative;z-index:5;height:66px}
 .icon-btn{width:44px;height:44px;border-radius:50%;background:rgba(27,36,54,.9);border:1px solid rgba(255,255,255,.06);display:grid;place-items:center;cursor:pointer;color:var(--muted)}
 .pill-center{background:var(--pill);border:1px solid rgba(255,255,255,.07);padding:11px 20px;border-radius:28px;font-size:14px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap}
-.hero{min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px 30px;position:relative;z-index:1;text-align:center;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(139,149,169,.25) transparent;max-width:760px;margin:0 auto;width:100%}
+.hero{height:calc(100dvh - 66px);min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px 104px;position:relative;z-index:1;text-align:center;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(139,149,169,.25) transparent;max-width:760px;margin:0 auto;width:100%}
 .hero:has(.results.show){justify-content:flex-start;padding-top:18px}
 .hero-title{font-size:clamp(26px,5.2vw,36px);font-weight:500;letter-spacing:-.02em;line-height:1.25;color:#CBD5E8;max-width:560px;animation:fadeUp .7s ease}
 .hero-sub{margin-top:18px;font-size:15px;color:var(--muted);line-height:1.65;max-width:420px;animation:fadeUp .8s ease}
@@ -21,7 +20,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
 .card-text{font-family:'Fraunces',serif;font-size:20px;line-height:1.45;color:#E8EEF8;font-weight:500;overflow-wrap:anywhere}.card-meta{margin-top:12px;font-size:12px;color:var(--muted)}
 .card-orig{margin-top:10px;font-size:11px;color:#5A667E;border-top:1px dashed #2A3852;padding-top:9px;font-style:italic}.card-actions{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
 .mini-btn{font-size:11px;padding:7px 13px;border-radius:20px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:.2s}.mini-btn:hover,.mini-btn:focus-visible{color:var(--text);border-color:var(--text);background:rgba(255,255,255,.06);outline:none}
-.bottom-area{width:100%;min-height:78px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));position:relative;z-index:20;background:linear-gradient(to top,var(--bg) 72%,rgba(11,15,26,.96) 88%,transparent 100%)}
+/* Composer is deliberately fixed to the viewport so it can never be pushed below the screen. */
+.bottom-area{position:fixed;left:0;right:0;bottom:0;width:100%;height:auto;min-height:78px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));z-index:50;background:linear-gradient(to top,var(--bg) 72%,rgba(11,15,26,.98) 90%,transparent 100%)}
 .input-pill{min-height:56px;background:var(--pill);border:1px solid var(--border);border-radius:30px;display:flex;align-items:center;gap:8px;padding:8px 10px 8px 8px;max-width:720px;margin:0 auto;box-shadow:0 12px 32px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.04)}
 .plus-btn{width:38px;height:38px;border-radius:50%;background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--muted);font-size:22px;display:grid;place-items:center;cursor:pointer;flex-shrink:0}
 .input-pill textarea{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.35;resize:none;min-height:24px;max-height:110px;padding:9px 4px;overflow-y:auto}.input-pill textarea::placeholder{color:var(--muted)}
@@ -29,6 +29,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
 .bottom-nav{display:none!important}
 .typing{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;padding:12px 0}.dots{display:flex;gap:4px}.dots span{width:5px;height:5px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite}.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
 @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@media (max-width:600px){.topbar{padding-top:18px}.hero-title{font-size:25px}.hero{padding:10px 16px 26px}.hero:has(.results.show){padding-top:10px}.card{padding:20px;border-radius:19px}.card-text{font-size:19px}.bottom-area{padding-left:12px;padding-right:12px}}
-@media (max-height:700px){.topbar{padding-top:12px}.bottom-area{min-height:72px;padding-top:6px}.hero{padding-top:8px;padding-bottom:14px}}
-@supports not (height:100dvh){body{height:100vh}}
+@media (max-width:600px){.topbar{padding-top:18px;height:62px}.hero{height:calc(100dvh - 62px);padding:10px 16px 104px}.hero-title{font-size:25px}.hero:has(.results.show){padding-top:10px}.card{padding:20px;border-radius:19px}.card-text{font-size:19px}.bottom-area{padding-left:12px;padding-right:12px}}
+@media (max-height:700px){.topbar{padding-top:12px;height:56px}.hero{height:calc(100dvh - 56px);padding-top:8px;padding-bottom:92px}.bottom-area{min-height:72px;padding-top:6px}}
+@supports not (height:100dvh){body{height:100vh}.hero{height:calc(100vh - 66px)}}
